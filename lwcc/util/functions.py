@@ -1,6 +1,7 @@
-from pathlib import Path
 import gdown
 import os
+
+from lwcc.config import weights_dir
 
 from torchvision import transforms
 from PIL import Image
@@ -13,17 +14,14 @@ def build_url(path):
     return url
 
 def weights_check(model_name, model_weights):
-    # create dir if does not exists
-    Path("/.lwcc/weights").mkdir(parents=True, exist_ok=True)
-
-    # download weights if not available
-    home = str(Path.home())
-
     file_name = "{}_{}.pth".format(model_name, model_weights)
     url = build_url(file_name)
-    output = os.path.join(home, "/.lwcc/weights/", file_name)
-    print(output)
 
+    # create dir if it does not exist
+    weights_dir().mkdir(parents=True, exist_ok=True)
+    output = str(weights_dir() / file_name)
+
+    # download weights if not available
     if not os.path.isfile(output):
         print(file_name, " will be downloaded to ", output)
         gdown.download(url, output, quiet=False)
